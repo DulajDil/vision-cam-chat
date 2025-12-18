@@ -36,9 +36,12 @@ Create a `.env` file with:
 PORT=3000
 
 # AWS Bedrock Configuration
+AWS_PROFILE=your-aws-profile-name
 AWS_REGION=ap-southeast-2
 BEDROCK_MODEL_ID=anthropic.claude-3-haiku-20240307-v1:0
 ```
+
+**Important:** Set `AWS_PROFILE` to your desired AWS CLI profile name (e.g., `default`, `personal`, etc.)
 
 **Note:** OpenAI API keys are NOT stored in .env - they must be provided per-request via the `X-Api-Key` header.
 
