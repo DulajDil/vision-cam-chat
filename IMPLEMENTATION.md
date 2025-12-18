@@ -15,6 +15,7 @@ A lightweight Node.js backend that allows users to:
 ## 🏗️ Architecture
 
 ### Technology Stack
+- **Language:** TypeScript 5.7+
 - **Runtime:** Node.js (ES modules)
 - **Framework:** Express.js
 - **File Upload:** Multer (in-memory storage)
@@ -22,6 +23,7 @@ A lightweight Node.js backend that allows users to:
   - OpenAI GPT-4o-mini (vision-capable)
   - AWS Bedrock Claude 3 Haiku
 - **Security:** CORS, BYOK for OpenAI, AWS IAM for Bedrock
+- **Dev Tools:** tsx (TypeScript execution), tsc (TypeScript compiler)
 
 ### Key Design Decisions
 
@@ -53,8 +55,13 @@ A lightweight Node.js backend that allows users to:
 
 ```
 vision-cam-chat/
-├── server.js              # Main Express server (all endpoints)
+├── src/
+│   ├── server.ts          # Main Express server (TypeScript)
+│   └── types/
+│       └── index.ts       # TypeScript type definitions
+├── dist/                  # Compiled JavaScript (git-ignored)
 ├── package.json           # Dependencies and scripts
+├── tsconfig.json          # TypeScript configuration
 ├── env.example            # Environment variable template
 ├── .gitignore            # Git ignore rules (security)
 ├── test-api.sh           # API testing script

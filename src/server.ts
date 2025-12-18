@@ -1,20 +1,27 @@
-import express from 'express';
+import express, { Request, Response, ErrorRequestHandler } from 'express';
 import multer from 'multer';
 import cors from 'cors';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import dotenv from 'dotenv';
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
 import OpenAI from 'openai';
+import type {
+    StoredImage,
+    ValidatedImage,
+    AIProvider,
+    AnalyzeResponse,
+    AskRequestBody,
+    AskResponse,
+    BedrockStatusResponse,
+    HealthResponse,
+    ErrorResponse,
+    RequestWithFile
+} from './types/index.js';
 
 // Load environment variables
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env['PORT'] || '3000';
 
 // ========================================
 // MIDDLEWARE
@@ -28,7 +35,7 @@ const storage = multer.memoryStorage();
 const upload = multer({
     storage,
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
-    fileFilter: (req, file, cb) => {
+    fileFilter: (_req, file, cb) => {
         if (file.mimetype.startsWith('image/')) {
             cb(null, true);
         } else {
@@ -41,7 +48,7 @@ const upload = multer({
 // IN-MEMORY IMAGE STORAGE
 // ========================================
 
-let latestImage = {
+let latestImage: StoredImage = {
     base64: null,
     mimeType: null,
     timestamp: null
@@ -54,7 +61,7 @@ let latestImage = {
 /**
  * Store image in memory as base64
  */
-function storeImage(buffer, mimeType) {
+function storeImage(buffer: Buffer, mimeType: string): void {
     latestImage = {
         base64: buffer.toString('base64'),
         mimeType: mimeType,
@@ -65,17 +72,26 @@ function storeImage(buffer, mimeType) {
 /**
  * Get the latest stored image
  */
-function getLatestImage() {
-    if (!latestImage.base64) {
+function getLatestImage(): ValidatedImage {
+    if (!latestImage.base64 || !latestImage.mimeType || !latestImage.timestamp) {
         throw new Error('No image has been uploaded yet');
     }
-    return latestImage;
+    return {
+        base64: latestImage.base64,
+        mimeType: latestImage.mimeType,
+        timestamp: latestImage.timestamp
+    };
 }
 
 /**
  * Call OpenAI vision API
  */
-async function callOpenAI(apiKey, prompt, imageBase64, mimeType) {
+async function callOpenAI(
+    apiKey: string | undefined,
+    prompt: string,
+    imageBase64: string,
+    mimeType: string
+): Promise<string> {
     if (!apiKey) {
         throw new Error('OpenAI API key required. Provide it via X-Api-Key header.');
     }
@@ -102,38 +118,44 @@ async function callOpenAI(apiKey, prompt, imageBase64, mimeType) {
         max_tokens: 300
     });
 
-    return response.choices[0].message.content;
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+        throw new Error('No response from OpenAI');
+    }
+
+    return content;
 }
 
 /**
  * Call AWS Bedrock (Claude) vision API
  */
-async function callBedrock(prompt, imageBase64, mimeType) {
-    const region = process.env.AWS_REGION || 'ap-southeast-2';
-    const modelId = process.env.BEDROCK_MODEL_ID || 'anthropic.claude-3-haiku-20240307-v1:0';
+async function callBedrock(
+    prompt: string,
+    imageBase64: string,
+    mimeType: string
+): Promise<string> {
+    const region = process.env['AWS_REGION'] || 'ap-southeast-2';
+    const modelId = process.env['BEDROCK_MODEL_ID'] || 'anthropic.claude-3-haiku-20240307-v1:0';
 
     const client = new BedrockRuntimeClient({ region });
-
-    // Extract image format from mimeType (e.g., "image/jpeg" -> "jpeg")
-    const imageFormat = mimeType.split('/')[1];
 
     const payload = {
         anthropic_version: 'bedrock-2023-05-31',
         max_tokens: 300,
         messages: [
             {
-                role: 'user',
+                role: 'user' as const,
                 content: [
                     {
-                        type: 'image',
+                        type: 'image' as const,
                         source: {
-                            type: 'base64',
+                            type: 'base64' as const,
                             media_type: mimeType,
                             data: imageBase64
                         }
                     },
                     {
-                        type: 'text',
+                        type: 'text' as const,
                         text: prompt
                     }
                 ]
@@ -149,21 +171,33 @@ async function callBedrock(prompt, imageBase64, mimeType) {
     });
 
     const response = await client.send(command);
-    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
 
-    return responseBody.content[0].text;
+    if (!response.body) {
+        throw new Error('No response body from Bedrock');
+    }
+
+    const responseBody = JSON.parse(new TextDecoder().decode(response.body)) as {
+        content: Array<{ text: string }>;
+    };
+
+    const text = responseBody.content[0]?.text;
+    if (!text) {
+        throw new Error('No text content in Bedrock response');
+    }
+
+    return text;
 }
 
 /**
  * Validate Bedrock configuration without invoking model
  */
-async function validateBedrockConfig() {
-    const region = process.env.AWS_REGION || 'ap-southeast-2';
-    const modelId = process.env.BEDROCK_MODEL_ID || 'anthropic.claude-3-haiku-20240307-v1:0';
+async function validateBedrockConfig(): Promise<BedrockStatusResponse> {
+    const region = process.env['AWS_REGION'] || 'ap-southeast-2';
+    const modelId = process.env['BEDROCK_MODEL_ID'] || 'anthropic.claude-3-haiku-20240307-v1:0';
 
     try {
         // Just create client to validate credentials and region
-        const client = new BedrockRuntimeClient({ region });
+        new BedrockRuntimeClient({ region });
 
         // Return success without actually invoking the model (to avoid cost)
         return {
@@ -171,9 +205,10 @@ async function validateBedrockConfig() {
             message: `Bedrock initialized successfully in region ${region} with model ${modelId}`
         };
     } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         return {
             ok: false,
-            message: `Bedrock initialization failed: ${error.message}`
+            message: `Bedrock initialization failed: ${errorMessage}`
         };
     }
 }
@@ -185,21 +220,22 @@ async function validateBedrockConfig() {
 /**
  * Health check endpoint
  */
-app.get('/health', (req, res) => {
+app.get('/health', (_req: Request, res: Response<HealthResponse>) => {
     res.json({ ok: true });
 });
 
 /**
  * Bedrock status check endpoint
  */
-app.get('/bedrock/status', async (req, res) => {
+app.get('/bedrock/status', async (_req: Request, res: Response<BedrockStatusResponse>) => {
     try {
         const status = await validateBedrockConfig();
         res.json(status);
     } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         res.status(500).json({
             ok: false,
-            message: error.message
+            message: errorMessage
         });
     }
 });
@@ -210,7 +246,7 @@ app.get('/bedrock/status', async (req, res) => {
  * multipart/form-data with 'frame' field
  * Optional 'provider' field (openai or bedrock)
  */
-app.post('/analyze', upload.single('frame'), async (req, res) => {
+app.post('/analyze', upload.single('frame'), async (req: RequestWithFile, res: Response<AnalyzeResponse | ErrorResponse>) => {
     try {
         // Validate image upload
         if (!req.file) {
@@ -223,7 +259,7 @@ app.post('/analyze', upload.single('frame'), async (req, res) => {
         storeImage(req.file.buffer, req.file.mimetype);
 
         // Get provider (default to bedrock)
-        const provider = req.body.provider || 'bedrock';
+        const provider = (req.body.provider || 'bedrock') as AIProvider;
 
         if (!['openai', 'bedrock'].includes(provider)) {
             return res.status(400).json({
@@ -234,24 +270,35 @@ app.post('/analyze', upload.single('frame'), async (req, res) => {
         // Create prompt for analysis
         const prompt = 'Describe what you see in this image in 1-2 sentences. Answer ONLY from what you can see. If unsure, say you\'re unsure and suggest how to improve the photo (move closer, reduce glare).';
 
-        let caption;
+        let caption: string;
 
         if (provider === 'openai') {
-            const apiKey = req.headers['x-api-key'];
+            const apiKey = req.headers['x-api-key'] as string | undefined;
+            if (!latestImage.base64 || !latestImage.mimeType) {
+                return res.status(500).json({
+                    error: 'Image not properly stored'
+                });
+            }
             caption = await callOpenAI(apiKey, prompt, latestImage.base64, latestImage.mimeType);
         } else {
+            if (!latestImage.base64 || !latestImage.mimeType) {
+                return res.status(500).json({
+                    error: 'Image not properly stored'
+                });
+            }
             caption = await callBedrock(prompt, latestImage.base64, latestImage.mimeType);
         }
 
-        res.json({
+        return res.json({
             provider,
             caption
         });
 
     } catch (error) {
         console.error('Error in /analyze:', error);
-        res.status(500).json({
-            error: error.message || 'Failed to analyze image'
+        const errorMessage = error instanceof Error ? error.message : 'Failed to analyze image';
+        return res.status(500).json({
+            error: errorMessage
         });
     }
 });
@@ -261,7 +308,7 @@ app.post('/analyze', upload.single('frame'), async (req, res) => {
  * POST /ask
  * JSON body: { provider: 'openai' | 'bedrock', question: string }
  */
-app.post('/ask', async (req, res) => {
+app.post('/ask', async (req: Request<{}, AskResponse | ErrorResponse, AskRequestBody>, res: Response<AskResponse | ErrorResponse>) => {
     try {
         // Validate request body
         const { provider, question } = req.body;
@@ -284,24 +331,25 @@ app.post('/ask', async (req, res) => {
         // Create prompt with constraints
         const prompt = `${question}\n\nAnswer ONLY from what you can see in the image. If unsure, say you're unsure and suggest how to improve the photo (move closer, reduce glare).`;
 
-        let answer;
+        let answer: string;
 
         if (provider === 'openai') {
-            const apiKey = req.headers['x-api-key'];
+            const apiKey = req.headers['x-api-key'] as string | undefined;
             answer = await callOpenAI(apiKey, prompt, image.base64, image.mimeType);
         } else {
             answer = await callBedrock(prompt, image.base64, image.mimeType);
         }
 
-        res.json({
+        return res.json({
             provider,
             answer
         });
 
     } catch (error) {
         console.error('Error in /ask:', error);
-        res.status(500).json({
-            error: error.message || 'Failed to process question'
+        const errorMessage = error instanceof Error ? error.message : 'Failed to process question';
+        return res.status(500).json({
+            error: errorMessage
         });
     }
 });
@@ -310,18 +358,21 @@ app.post('/ask', async (req, res) => {
 // ERROR HANDLING
 // ========================================
 
-app.use((err, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     console.error('Unhandled error:', err);
+    const errorMessage = err instanceof Error ? err.message : 'Internal server error';
     res.status(500).json({
-        error: err.message || 'Internal server error'
+        error: errorMessage
     });
-});
+};
+
+app.use(errorHandler);
 
 // ========================================
 // START SERVER
 // ========================================
 
-app.listen(PORT, () => {
+app.listen(parseInt(PORT), () => {
     console.log(`🚀 Vision Cam Chat server running on port ${PORT}`);
     console.log(`📍 Health check: http://localhost:${PORT}/health`);
     console.log(`📍 Bedrock status: http://localhost:${PORT}/bedrock/status`);
