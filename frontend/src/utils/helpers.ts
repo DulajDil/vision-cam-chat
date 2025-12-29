@@ -5,19 +5,21 @@
 import type { StatusType } from '../types/index.js';
 
 /**
- * Create and show a status message
+ * Create and show a status message as floating toast
  */
 export function showStatus(statusDiv: HTMLDivElement, message: string, type: StatusType = 'info'): void {
     statusDiv.textContent = message;
-    statusDiv.className = `status ${type}`;
-    statusDiv.style.display = 'block';
-
-    // Auto-hide after 5 seconds for success/info messages
-    if (type !== 'error') {
-        setTimeout(() => {
-            statusDiv.style.display = 'none';
-        }, 5000);
-    }
+    statusDiv.className = `status-toast ${type}`;
+    
+    // Show toast
+    requestAnimationFrame(() => {
+        statusDiv.classList.add('show');
+    });
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+        statusDiv.classList.remove('show');
+    }, 3000);
 }
 
 /**

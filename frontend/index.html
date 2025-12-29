@@ -54,9 +54,6 @@
                     <input type="password" id="openaiKey" placeholder="sk-..." autocomplete="off">
                     <small>Your key is never stored, only used per request</small>
                 </div>
-
-                <!-- Status -->
-                <div id="status" class="status"></div>
             </div>
 
             <!-- Right Panel: Chat & Results -->
@@ -81,6 +78,9 @@
             <p>Backend Status: <span id="backendStatus" class="status-indicator">●</span></p>
         </footer>
     </div>
+
+    <!-- Floating Status Toast -->
+    <div id="status" class="status-toast"></div>
 
     <script type="module" src="dist/app.js"></script>
 </body>

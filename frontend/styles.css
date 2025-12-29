@@ -184,27 +184,43 @@ header p {
     font-size: 0.85em;
 }
 
-/* Status */
-.status {
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
+/* Status Toast - Floating notification */
+.status-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
     font-weight: 500;
+    font-size: 0.9em;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    max-width: 350px;
 }
 
-.status.success {
-    background: #c6f6d5;
-    color: #22543d;
+.status-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
-.status.error {
-    background: #fed7d7;
-    color: #742a2a;
+.status-toast.success {
+    background: #10b981;
+    color: white;
 }
 
-.status.info {
-    background: #bee3f8;
-    color: #2c5282;
+.status-toast.error {
+    background: #ef4444;
+    color: white;
+}
+
+.status-toast.info {
+    background: #3b82f6;
+    color: white;
 }
 
 /* Chat Panel */
