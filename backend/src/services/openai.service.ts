@@ -31,7 +31,7 @@ export async function callOpenAI(
                         type: 'image_url',
                         image_url: {
                             url: `data:${mimeType};base64,${imageBase64}`,
-                            detail: 'low'
+                            detail: 'high'  // Changed from 'low' to 'high' for better image analysis
                         }
                     }
                 ]

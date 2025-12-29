@@ -24,13 +24,13 @@ export const STATUS_TYPES = {
 
 export const WEBCAM_CONFIG: WebcamConfig = {
     video: {
-        width: 640,
-        height: 480
+        width: 1280,
+        height: 720
     }
 };
 
 export const IMAGE_CONFIG: ImageConfig = {
     format: 'image/jpeg',
-    quality: 0.95
+    quality: 0.92  // High quality for better AI analysis
 };
 
