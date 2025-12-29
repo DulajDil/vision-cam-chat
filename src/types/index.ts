@@ -59,14 +59,6 @@ export interface AskResponse {
 }
 
 /**
- * Bedrock status response
- */
-export interface BedrockStatusResponse {
-    ok: boolean;
-    message: string;
-}
-
-/**
  * Health check response
  */
 export interface HealthResponse {

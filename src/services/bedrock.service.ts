@@ -2,9 +2,34 @@
  * AWS Bedrock Service
  * Handles all AWS Bedrock (Claude) vision API calls
  */
-
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
-import type { BedrockStatusResponse } from '../types/index.js';
+import type { BedrockStatusResponse } from '../types/bedrock.js';
+
+const region = process.env['AWS_REGION'] || 'ap-southeast-2';
+const modelId = process.env['BEDROCK_MODEL_ID'] || 'anthropic.claude-3-haiku-20240307-v1:0';
+
+
+/**
+ * Validate Bedrock configuration without invoking model
+ */
+export async function validateBedrockConfig(): Promise<BedrockStatusResponse> {
+    try {
+        // Just create client to validate credentials and region
+        new BedrockRuntimeClient({ region });
+
+        // Return success without actually invoking the model (to avoid cost)
+        return {
+            ok: true,
+            message: `Bedrock initialized successfully in region ${region} with model ${modelId}`
+        };
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        return {
+            ok: false,
+            message: `Bedrock initialization failed: ${errorMessage}`
+        };
+    }
+}
 
 /**
  * Call AWS Bedrock (Claude) vision API
@@ -14,9 +39,6 @@ export async function callBedrock(
     imageBase64: string,
     mimeType: string
 ): Promise<string> {
-    const region = process.env['AWS_REGION'] || 'ap-southeast-2';
-    const modelId = process.env['BEDROCK_MODEL_ID'] || 'anthropic.claude-3-haiku-20240307-v1:0';
-
     const client = new BedrockRuntimeClient({ region });
 
     const payload = {
@@ -68,28 +90,5 @@ export async function callBedrock(
     return text;
 }
 
-/**
- * Validate Bedrock configuration without invoking model
- */
-export async function validateBedrockConfig(): Promise<BedrockStatusResponse> {
-    const region = process.env['AWS_REGION'] || 'ap-southeast-2';
-    const modelId = process.env['BEDROCK_MODEL_ID'] || 'anthropic.claude-3-haiku-20240307-v1:0';
 
-    try {
-        // Just create client to validate credentials and region
-        new BedrockRuntimeClient({ region });
-
-        // Return success without actually invoking the model (to avoid cost)
-        return {
-            ok: true,
-            message: `Bedrock initialized successfully in region ${region} with model ${modelId}`
-        };
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        return {
-            ok: false,
-            message: `Bedrock initialization failed: ${errorMessage}`
-        };
-    }
-}
 

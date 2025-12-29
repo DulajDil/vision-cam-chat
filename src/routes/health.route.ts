@@ -4,7 +4,8 @@
  */
 
 import { Router, Request, Response } from 'express';
-import type { HealthResponse, BedrockStatusResponse } from '../types/index.js';
+import type { HealthResponse } from '../types/index.js';
+import type { BedrockStatusResponse } from '../types/bedrock.js';
 import { validateBedrockConfig } from '../services/bedrock.service.js';
 
 const router = Router();
@@ -33,6 +34,23 @@ router.get('/bedrock/status', async (_req: Request, res: Response<BedrockStatusR
         });
     }
 });
+
+// /**
+//  * GET /openai/status
+//  * OpenAI status check endpoint
+//  */
+// router.get('/openai/status', async (_req: Request, res: Response<OpenAIStatusResponse>) => {
+//     try {
+//         const status = await openAIService.validateConfig();
+//         res.json(status);
+//     } catch (error) {
+//         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+//         res.status(500).json({
+//             ok: false,
+//             message: errorMessage
+//         });
+//     }
+// });
 
 export default router;
 
