@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vision Cam Chat</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -52,12 +54,7 @@
                 <!-- OpenAI API Key Input -->
                 <div id="openaiKeyInput" class="api-key-input" style="display: none;">
                     <label for="openaiKey">OpenAI API Key:</label>
-                    <input 
-                        type="password" 
-                        id="openaiKey" 
-                        placeholder="sk-..."
-                        autocomplete="off"
-                    >
+                    <input type="password" id="openaiKey" placeholder="sk-..." autocomplete="off">
                     <small>Your key is never stored, only used per request</small>
                 </div>
 
@@ -81,12 +78,7 @@
                     </div>
 
                     <div class="chat-input-container">
-                        <input 
-                            type="text" 
-                            id="questionInput" 
-                            placeholder="Ask a question about the image..."
-                            disabled
-                        >
+                        <input type="text" id="questionInput" placeholder="Ask a question about the image..." disabled>
                         <button id="askBtn" class="btn btn-primary" disabled>
                             Send
                         </button>
@@ -100,7 +92,7 @@
         </footer>
     </div>
 
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
-</html>
 
+</html>

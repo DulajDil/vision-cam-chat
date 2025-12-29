@@ -59,7 +59,8 @@ header p {
     aspect-ratio: 4/3;
 }
 
-#webcam, #capturedImage {
+#webcam,
+#capturedImage {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -211,13 +212,15 @@ header p {
     gap: 20px;
 }
 
-.result-section, .chat-section {
+.result-section,
+.chat-section {
     background: #f7fafc;
     padding: 20px;
     border-radius: 15px;
 }
 
-.result-section h3, .chat-section h3 {
+.result-section h3,
+.chat-section h3 {
     margin-bottom: 15px;
     color: #2d3748;
 }
@@ -324,9 +327,12 @@ footer {
 }
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.5;
     }
@@ -343,17 +349,16 @@ footer {
     header h1 {
         font-size: 1.8em;
     }
-    
+
     .controls {
         flex-direction: column;
     }
-    
+
     .btn {
         width: 100%;
     }
-    
+
     .radio-group {
         flex-direction: column;
     }
 }
-
