@@ -13,7 +13,7 @@ export const PROVIDERS: Record<string, AIProvider> = {
 
 export const PROVIDER_NAMES: Record<AIProvider, string> = {
     bedrock: 'AWS Bedrock (Claude)',
-    openai: 'OpenAI (GPT-4o-mini)'
+    openai: 'OpenAI (GPT-4o)'
 };
 
 export const STATUS_TYPES = {

@@ -10,12 +10,12 @@ import type { StatusType } from '../types/index.js';
 export function showStatus(statusDiv: HTMLDivElement, message: string, type: StatusType = 'info'): void {
     statusDiv.textContent = message;
     statusDiv.className = `status-toast ${type}`;
-    
+
     // Show toast
     requestAnimationFrame(() => {
         statusDiv.classList.add('show');
     });
-    
+
     // Auto-hide after 3 seconds
     setTimeout(() => {
         statusDiv.classList.remove('show');
