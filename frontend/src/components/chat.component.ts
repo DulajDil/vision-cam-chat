@@ -5,19 +5,26 @@
 
 import { scrollToBottom, clearElement } from '../utils/helpers.js';
 import { PROVIDER_NAMES } from '../utils/constants.js';
+import type { ChatElements, AIProvider } from '../types/index.js';
 
 export class ChatComponent {
-    constructor(elements) {
+    private chatHistory: HTMLDivElement;
+    private questionInput: HTMLInputElement;
+    private askBtn: HTMLButtonElement;
+
+    private currentProvider: AIProvider = 'bedrock';
+
+    public onAskQuestion?: (question: string) => void;
+
+    constructor(elements: ChatElements) {
         this.chatHistory = elements.chatHistory;
         this.questionInput = elements.questionInput;
         this.askBtn = elements.askBtn;
 
-        this.currentProvider = 'bedrock';
-
         this.setupEventListeners();
     }
 
-    setupEventListeners() {
+    private setupEventListeners(): void {
         this.askBtn.addEventListener('click', () => this.handleAskQuestion());
 
         this.questionInput.addEventListener('keypress', (e) => {
@@ -27,7 +34,7 @@ export class ChatComponent {
         });
     }
 
-    handleAskQuestion() {
+    private handleAskQuestion(): void {
         const question = this.questionInput.value.trim();
 
         if (!question) {
@@ -42,7 +49,7 @@ export class ChatComponent {
         this.questionInput.value = '';
     }
 
-    addMessage(type, message) {
+    public addMessage(type: 'user' | 'ai', message: string): void {
         // Remove placeholder if exists
         const placeholder = this.chatHistory.querySelector('.placeholder');
         if (placeholder) {
@@ -65,22 +72,22 @@ export class ChatComponent {
         scrollToBottom(this.chatHistory);
     }
 
-    clear() {
+    public clear(): void {
         clearElement(this.chatHistory);
         this.chatHistory.innerHTML = '<p class="placeholder">Ask questions about this image...</p>';
     }
 
-    enable() {
+    public enable(): void {
         this.questionInput.disabled = false;
         this.askBtn.disabled = false;
     }
 
-    disable() {
+    public disable(): void {
         this.questionInput.disabled = true;
         this.askBtn.disabled = true;
     }
 
-    setLoadingState(isLoading) {
+    public setLoadingState(isLoading: boolean): void {
         if (isLoading) {
             this.askBtn.textContent = '⏳';
             this.disable();
@@ -91,7 +98,7 @@ export class ChatComponent {
         }
     }
 
-    setProvider(provider) {
+    public setProvider(provider: AIProvider): void {
         this.currentProvider = provider;
     }
 }

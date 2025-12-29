@@ -5,27 +5,36 @@
 
 import { PROVIDERS } from '../utils/constants.js';
 import { getSelectedProvider, showStatus } from '../utils/helpers.js';
+import type { ProviderElements, AIProvider } from '../types/index.js';
 
 export class ProviderComponent {
-    constructor(elements, statusDiv) {
+    private providerRadios: NodeListOf<HTMLInputElement>;
+    private openaiKeyInput: HTMLDivElement;
+    private openaiKey: HTMLInputElement;
+    private statusDiv: HTMLDivElement;
+
+    private currentProvider: AIProvider = PROVIDERS.BEDROCK;
+
+    public onProviderChange?: (provider: AIProvider) => void;
+
+    constructor(elements: ProviderElements, statusDiv: HTMLDivElement) {
         this.providerRadios = elements.providerRadios;
         this.openaiKeyInput = elements.openaiKeyInput;
         this.openaiKey = elements.openaiKey;
         this.statusDiv = statusDiv;
 
-        this.currentProvider = PROVIDERS.BEDROCK;
-
         this.setupEventListeners();
     }
 
-    setupEventListeners() {
+    private setupEventListeners(): void {
         this.providerRadios.forEach(radio => {
             radio.addEventListener('change', (e) => this.handleProviderChange(e));
         });
     }
 
-    handleProviderChange(e) {
-        this.currentProvider = e.target.value;
+    private handleProviderChange(e: Event): void {
+        const target = e.target as HTMLInputElement;
+        this.currentProvider = target.value as AIProvider;
 
         if (this.currentProvider === PROVIDERS.OPENAI) {
             this.openaiKeyInput.style.display = 'block';
@@ -45,15 +54,16 @@ export class ProviderComponent {
         }
     }
 
-    getProvider() {
-        return getSelectedProvider(this.providerRadios);
+    public getProvider(): AIProvider {
+        const selected = getSelectedProvider(this.providerRadios);
+        return (selected as AIProvider) || PROVIDERS.BEDROCK;
     }
 
-    getOpenAIKey() {
+    public getOpenAIKey(): string {
         return this.openaiKey.value.trim();
     }
 
-    validateProvider() {
+    public validateProvider(): boolean {
         if (this.currentProvider === PROVIDERS.OPENAI && !this.getOpenAIKey()) {
             showStatus(this.statusDiv, 'Please enter your OpenAI API key', 'error');
             this.openaiKey.focus();

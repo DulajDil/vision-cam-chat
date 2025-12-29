@@ -4,11 +4,18 @@
  */
 
 import { API_BASE_URL } from '../utils/constants.js';
+import type {
+    HealthResponse,
+    BedrockStatusResponse,
+    AnalyzeResponse,
+    AskResponse,
+    AIProvider
+} from '../types/index.js';
 
 /**
  * Check backend health status
  */
-export async function checkBackendHealth() {
+export async function checkBackendHealth(): Promise<HealthResponse> {
     const response = await fetch(`${API_BASE_URL}/health`);
     if (!response.ok) {
         throw new Error('Backend not responding');
@@ -19,7 +26,7 @@ export async function checkBackendHealth() {
 /**
  * Check Bedrock status
  */
-export async function checkBedrockStatus() {
+export async function checkBedrockStatus(): Promise<BedrockStatusResponse> {
     const response = await fetch(`${API_BASE_URL}/bedrock/status`);
     return await response.json();
 }
@@ -27,12 +34,16 @@ export async function checkBedrockStatus() {
 /**
  * Analyze image with AI
  */
-export async function analyzeImage(imageBlob, provider, openaiKey = null) {
+export async function analyzeImage(
+    imageBlob: Blob,
+    provider: AIProvider,
+    openaiKey: string | null = null
+): Promise<AnalyzeResponse> {
     const formData = new FormData();
     formData.append('frame', imageBlob, 'photo.jpg');
     formData.append('provider', provider);
 
-    const headers = {};
+    const headers: HeadersInit = {};
     if (provider === 'openai' && openaiKey) {
         headers['X-Api-Key'] = openaiKey;
     }
@@ -55,8 +66,12 @@ export async function analyzeImage(imageBlob, provider, openaiKey = null) {
 /**
  * Ask a question about the image
  */
-export async function askQuestion(question, provider, openaiKey = null) {
-    const headers = {
+export async function askQuestion(
+    question: string,
+    provider: AIProvider,
+    openaiKey: string | null = null
+): Promise<AskResponse> {
+    const headers: HeadersInit = {
         'Content-Type': 'application/json'
     };
 

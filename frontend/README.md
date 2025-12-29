@@ -1,169 +1,143 @@
-# Vision Cam Chat - Frontend
+# Frontend - Vision Cam Chat
 
-Simple web UI for the Vision Cam Chat backend.
+TypeScript-based frontend for the Vision Cam Chat application.
 
-## Features
+## 🚀 Features
 
-- 📹 **Webcam Integration** - Capture photos directly from your webcam
-- 🤖 **Dual AI Providers** - Choose between OpenAI or AWS Bedrock
-- 💬 **Interactive Chat** - Ask questions about captured images
-- 🎨 **Modern UI** - Clean, responsive design
-- 🔒 **Secure** - OpenAI keys never stored, only used per request
+- **Webcam Integration**: Capture images directly from your camera
+- **AI Vision Analysis**: Get instant descriptions of captured images
+- **Interactive Chat**: Ask questions about your images
+- **Dual Provider Support**: Choose between AWS Bedrock or OpenAI
+- **Real-time Status**: Monitor backend connection status
+- **Type-Safe**: Built entirely in TypeScript
 
-## Quick Start
-
-### 1. Ensure Backend is Running
-
-```bash
-cd ../backend
-npm run dev
-```
-
-Backend should be running on http://localhost:3000
-
-### 2. Open Frontend
-
-Simply open `index.html` in your browser:
-
-```bash
-# On macOS
-open index.html
-
-# On Linux
-xdg-open index.html
-
-# On Windows
-start index.html
-```
-
-Or use a local server (recommended):
-
-```bash
-# Using Python
-python3 -m http.server 8080
-
-# Using Node.js (if you have http-server installed)
-npx http-server -p 8080
-```
-
-Then visit: http://localhost:8080
-
-## How to Use
-
-### 1. Start Camera
-- Click "Start Camera" button
-- Allow browser to access your webcam
-
-### 2. Capture Photo
-- Click "Capture Photo" when ready
-- Preview your captured image
-
-### 3. Choose AI Provider
-- **AWS Bedrock (Claude)** - Default, uses backend AWS credentials
-- **OpenAI (GPT-4o-mini)** - Requires your OpenAI API key
-
-### 4. Analyze Image
-- Click "Analyze Image"
-- Wait for AI to describe what it sees
-
-### 5. Ask Questions
-- Type questions about the image
-- Get AI-powered answers based on what's visible
-
-## AI Providers
-
-### AWS Bedrock (Claude)
-- ✅ No API key needed (uses backend AWS credentials)
-- ✅ Fast and accurate
-- ✅ Cost-effective
-- ⚠️ Backend must have AWS credentials configured
-
-### OpenAI (GPT-4o-mini)
-- ✅ BYOK - Bring Your Own Key
-- ✅ Powerful vision model
-- ✅ Keys never stored
-- 🔑 Requires OpenAI API key from https://platform.openai.com
-
-## Browser Compatibility
-
-Requires a modern browser with:
-- ✅ WebRTC support (for webcam)
-- ✅ Fetch API
-- ✅ ES6+ JavaScript
-
-Tested on:
-- Chrome/Edge 90+
-- Firefox 88+
-- Safari 14+
-
-## Security Notes
-
-- 🔒 OpenAI API keys are **never stored**
-- 🔒 Keys are only sent with API requests
-- 🔒 All communication with backend via CORS
-- 🔒 No data is saved to localStorage/cookies
-
-## Troubleshooting
-
-### "Backend offline" message
-- Make sure backend server is running on port 3000
-- Check backend logs for errors
-
-### Camera not working
-- Allow camera permissions in browser
-- Check if another app is using the camera
-- Try refreshing the page
-
-### OpenAI errors
-- Verify your API key is correct (starts with `sk-`)
-- Check you have credits on your OpenAI account
-- Ensure API key has proper permissions
-
-### CORS errors
-- Backend has CORS enabled by default
-- If using a different port, update `API_BASE_URL` in `app.js`
-
-## File Structure
+## 📁 Project Structure
 
 ```
 frontend/
-├── index.html    # Main HTML structure
-├── styles.css    # Styling and layout
-├── app.js        # JavaScript logic
-└── README.md     # This file
+├── src/
+│   ├── components/          # UI Components (TypeScript)
+│   │   ├── camera.component.ts
+│   │   ├── chat.component.ts
+│   │   ├── analysis.component.ts
+│   │   ├── provider.component.ts
+│   │   └── backend-status.component.ts
+│   │
+│   ├── services/            # API Layer
+│   │   └── api.service.ts
+│   │
+│   ├── utils/               # Utilities
+│   │   ├── constants.ts
+│   │   └── helpers.ts
+│   │
+│   ├── types/               # TypeScript Types
+│   │   └── index.ts
+│   │
+│   └── app.ts              # Main Entry Point
+│
+├── dist/                   # Compiled JavaScript (generated)
+├── index.html             # Main HTML
+├── styles.css             # Styling
+├── package.json           # Dependencies
+└── tsconfig.json          # TypeScript Config
 ```
 
-## Development
+## 🛠️ Development
 
-### Modify API URL
+### Prerequisites
 
-If backend is on a different port, edit `app.js`:
+- Node.js (v20+)
+- npm
 
-```javascript
-const API_BASE_URL = 'http://localhost:YOUR_PORT';
+### Install Dependencies
+
+```bash
+npm install
 ```
 
-### Customize Styling
+### Build TypeScript
 
-Edit `styles.css` to change colors, layout, etc.
+```bash
+npm run build
+```
 
-## Tech Stack
+### Watch Mode (Auto-rebuild on changes)
 
-- **Vanilla JavaScript** - No frameworks needed
-- **WebRTC** - Webcam access
-- **Fetch API** - Backend communication
-- **CSS Grid/Flexbox** - Responsive layout
+```bash
+npm run watch
+```
 
-## Future Enhancements
+### Type Check Only
 
-- [ ] Image upload (instead of webcam only)
-- [ ] Multi-language support
-- [ ] Dark mode
-- [ ] Image history
-- [ ] Export chat conversations
-- [ ] Mobile app version
+```bash
+npm run typecheck
+```
 
----
+## 🌐 Running the Frontend
 
-Built with ❤️ for webcam-based AI interactions
+1. Build the TypeScript:
+   ```bash
+   npm run build
+   ```
 
+2. Start the backend server (see `../backend/README.md`)
+
+3. Open `index.html` in your browser, or use a local server:
+   ```bash
+   python3 -m http.server 8000
+   # Then visit http://localhost:8000
+   ```
+
+## 🎯 Usage
+
+1. **Start Camera**: Click the "📹 Start Camera" button
+2. **Capture Photo**: Click "📸 Take Photo"
+3. **Select Provider**: Choose between Bedrock or OpenAI
+   - For OpenAI: Enter your API key
+4. **Analyze**: Click "🤖 Analyze Image"
+5. **Ask Questions**: Type questions in the chat and press Enter
+
+## 🔧 TypeScript Configuration
+
+The project uses strict TypeScript settings:
+- Strict null checks
+- No implicit any
+- Full type safety
+- ES2020 target
+- ES Modules
+
+## 📦 Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run build` | Compile TypeScript to JavaScript |
+| `npm run watch` | Watch mode - auto-compile on changes |
+| `npm run typecheck` | Type check without emitting files |
+
+## 🎨 Component Architecture
+
+Each component is self-contained and handles a specific UI concern:
+
+- **CameraComponent**: Webcam control, photo capture
+- **ChatComponent**: Message display, user input
+- **AnalysisComponent**: Results display
+- **ProviderComponent**: AI provider selection
+- **BackendStatusComponent**: Health monitoring
+
+## 🔌 API Integration
+
+All API calls are centralized in `api.service.ts`:
+- `checkBackendHealth()` - Health check
+- `checkBedrockStatus()` - Bedrock status
+- `analyzeImage()` - Image analysis
+- `askQuestion()` - Q&A about image
+
+## 🧪 Type Safety
+
+The project includes comprehensive TypeScript types:
+- Request/Response types
+- Component element types
+- Configuration types
+- Provider types
+
+See `src/types/index.ts` for all type definitions.

@@ -1,0 +1,14 @@
+{
+    "name": "vision-cam-chat-frontend",
+    "version": "1.0.0",
+    "description": "Frontend for Vision Cam Chat",
+    "type": "module",
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc --watch",
+        "typecheck": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "typescript": "^5.7.2"
+    }
+}

@@ -2,10 +2,12 @@
  * Utility Helper Functions
  */
 
+import type { StatusType } from '../types/index.js';
+
 /**
  * Create and show a status message
  */
-export function showStatus(statusDiv, message, type = 'info') {
+export function showStatus(statusDiv: HTMLDivElement, message: string, type: StatusType = 'info'): void {
     statusDiv.textContent = message;
     statusDiv.className = `status ${type}`;
     statusDiv.style.display = 'block';
@@ -21,21 +23,21 @@ export function showStatus(statusDiv, message, type = 'info') {
 /**
  * Scroll element to bottom
  */
-export function scrollToBottom(element) {
+export function scrollToBottom(element: HTMLElement): void {
     element.scrollTop = element.scrollHeight;
 }
 
 /**
  * Clear element content
  */
-export function clearElement(element) {
+export function clearElement(element: HTMLElement): void {
     element.innerHTML = '';
 }
 
 /**
  * Get selected provider from radio buttons
  */
-export function getSelectedProvider(radioButtons) {
+export function getSelectedProvider(radioButtons: NodeListOf<HTMLInputElement>): string | null {
     for (const radio of radioButtons) {
         if (radio.checked) {
             return radio.value;

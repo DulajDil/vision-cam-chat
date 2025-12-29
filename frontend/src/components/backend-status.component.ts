@@ -5,16 +5,20 @@
 
 import { checkBackendHealth } from '../services/api.service.js';
 import { showStatus } from '../utils/helpers.js';
+import type { StatusElements } from '../types/index.js';
 
 export class BackendStatusComponent {
-    constructor(elements, statusDiv) {
+    private statusIndicator: HTMLSpanElement;
+    private statusDiv: HTMLDivElement;
+
+    private checkInterval: number | null = null;
+
+    constructor(elements: StatusElements, statusDiv: HTMLDivElement) {
         this.statusIndicator = elements.backendStatus;
         this.statusDiv = statusDiv;
-
-        this.checkInterval = null;
     }
 
-    async checkStatus() {
+    public async checkStatus(): Promise<void> {
         try {
             await checkBackendHealth();
             this.setOnline();
@@ -25,22 +29,22 @@ export class BackendStatusComponent {
         }
     }
 
-    setOnline() {
+    private setOnline(): void {
         this.statusIndicator.classList.add('online');
         this.statusIndicator.classList.remove('offline');
     }
 
-    setOffline() {
+    private setOffline(): void {
         this.statusIndicator.classList.add('offline');
         this.statusIndicator.classList.remove('online');
     }
 
-    startMonitoring(intervalMs = 30000) {
+    public startMonitoring(intervalMs: number = 30000): void {
         this.checkStatus();
-        this.checkInterval = setInterval(() => this.checkStatus(), intervalMs);
+        this.checkInterval = window.setInterval(() => this.checkStatus(), intervalMs);
     }
 
-    stopMonitoring() {
+    public stopMonitoring(): void {
         if (this.checkInterval) {
             clearInterval(this.checkInterval);
             this.checkInterval = null;
