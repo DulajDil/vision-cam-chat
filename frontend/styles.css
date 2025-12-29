@@ -214,14 +214,15 @@ header p {
     gap: 20px;
 }
 
-.result-section,
 .chat-section {
     background: #f7fafc;
     padding: 20px;
     border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
-.result-section h3,
 .chat-section h3 {
     margin-bottom: 15px;
     color: #2d3748;
@@ -250,10 +251,11 @@ header p {
     background: white;
     border-radius: 10px;
     padding: 20px;
-    height: 300px;
+    flex: 1;
     overflow-y: auto;
     border: 2px solid #e2e8f0;
     margin-bottom: 15px;
+    min-height: 400px;
 }
 
 .chat-message {

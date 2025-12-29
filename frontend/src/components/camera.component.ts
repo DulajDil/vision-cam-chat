@@ -94,7 +94,7 @@ export class CameraComponent {
             this.capturedImage.style.display = 'block';
             this.webcam.style.display = 'none';
 
-            showStatus(this.statusDiv, 'Photo captured! Click "Analyze Image" to continue.', 'success');
+            showStatus(this.statusDiv, 'Photo captured! Analyzing...', 'success');
 
             // Notify that image is ready
             if (this.onImageCaptured) {

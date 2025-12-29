@@ -74,7 +74,6 @@ export class ChatComponent {
 
     public clear(): void {
         clearElement(this.chatHistory);
-        this.chatHistory.innerHTML = '<p class="placeholder">Ask questions about this image...</p>';
     }
 
     public enable(): void {
@@ -89,12 +88,20 @@ export class ChatComponent {
 
     public setLoadingState(isLoading: boolean): void {
         if (isLoading) {
-            this.askBtn.textContent = '⏳';
+            this.askBtn.textContent = '...';
             this.disable();
         } else {
             this.askBtn.textContent = 'Send';
             this.enable();
             this.questionInput.focus();
+        }
+    }
+
+    public setAnalyzingState(isAnalyzing: boolean): void {
+        if (isAnalyzing) {
+            this.disable();
+        } else {
+            this.enable();
         }
     }
 

@@ -5,7 +5,6 @@
 
 import { CameraComponent } from './components/camera.component.js';
 import { ChatComponent } from './components/chat.component.js';
-import { AnalysisComponent } from './components/analysis.component.js';
 import { ProviderComponent } from './components/provider.component.js';
 import { BackendStatusComponent } from './components/backend-status.component.js';
 import { analyzeImage, askQuestion } from './services/api.service.js';
@@ -15,7 +14,6 @@ import type { AIProvider, AppElements } from './types/index.js';
 class App {
     private camera!: CameraComponent;
     private chat!: ChatComponent;
-    private analysis!: AnalysisComponent;
     private provider!: ProviderComponent;
     private backendStatus!: BackendStatusComponent;
 
@@ -55,11 +53,6 @@ class App {
             askBtn: elements.askBtn
         });
 
-        this.analysis = new AnalysisComponent({
-            analysisResult: elements.analysisResult,
-            analyzeBtn: elements.analyzeBtn
-        });
-
         this.provider = new ProviderComponent(
             {
                 providerRadios: elements.providerRadios,
@@ -83,9 +76,6 @@ class App {
 
         // Start backend monitoring
         this.backendStatus.startMonitoring();
-
-        // Analyze button click handler
-        elements.analyzeBtn.addEventListener('click', () => this.handleAnalyze());
     }
 
     private getElements(): AppElements {
@@ -103,11 +93,9 @@ class App {
             capturedImage: getElement<HTMLImageElement>('capturedImage'),
             startBtn: getElement<HTMLButtonElement>('startBtn'),
             captureBtn: getElement<HTMLButtonElement>('captureBtn'),
-            analyzeBtn: getElement<HTMLButtonElement>('analyzeBtn'),
             chatHistory: getElement<HTMLDivElement>('chatHistory'),
             questionInput: getElement<HTMLInputElement>('questionInput'),
             askBtn: getElement<HTMLButtonElement>('askBtn'),
-            analysisResult: getElement<HTMLDivElement>('analysisResult'),
             providerRadios: document.querySelectorAll<HTMLInputElement>('input[name="provider"]'),
             openaiKeyInput: getElement<HTMLDivElement>('openaiKeyInput'),
             openaiKey: getElement<HTMLInputElement>('openaiKey'),
@@ -117,9 +105,9 @@ class App {
     }
 
     private setupInteractions(): void {
-        // When image is captured, enable analyze button
+        // When image is captured, automatically analyze it
         this.camera.onImageCaptured = () => {
-            this.analysis.enableAnalyzeButton();
+            this.handleAnalyze();
         };
 
         // When provider changes, update chat component
@@ -151,18 +139,19 @@ class App {
         const currentProvider = this.provider.getProvider();
         const openaiKey = currentProvider === 'openai' ? this.provider.getOpenAIKey() : null;
 
-        // Set loading states
-        this.analysis.setLoadingState(true);
+        // Set loading state in chat
+        this.chat.setAnalyzingState(true);
+        showStatus(this.statusDiv, 'Analyzing image...', 'info');
 
         try {
             const data = await analyzeImage(imageBlob, currentProvider, openaiKey);
 
-            // Display result
-            this.analysis.displayResult(data);
-
-            // Enable chat
-            this.chat.enable();
+            // Clear chat and show analysis result as AI message
             this.chat.clear();
+            this.chat.addMessage('ai', data.caption);
+
+            // Enable chat for questions
+            this.chat.enable();
 
             showStatus(this.statusDiv, 'Analysis complete! You can now ask questions.', 'success');
 
@@ -172,7 +161,7 @@ class App {
             console.error('Analysis error:', error);
 
         } finally {
-            this.analysis.setLoadingState(false);
+            this.chat.setAnalyzingState(false);
         }
     }
 

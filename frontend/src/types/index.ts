@@ -76,11 +76,9 @@ export interface AppElements {
     capturedImage: HTMLImageElement;
     startBtn: HTMLButtonElement;
     captureBtn: HTMLButtonElement;
-    analyzeBtn: HTMLButtonElement;
     chatHistory: HTMLDivElement;
     questionInput: HTMLInputElement;
     askBtn: HTMLButtonElement;
-    analysisResult: HTMLDivElement;
     providerRadios: NodeListOf<HTMLInputElement>;
     openaiKeyInput: HTMLDivElement;
     openaiKey: HTMLInputElement;
