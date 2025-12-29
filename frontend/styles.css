@@ -221,6 +221,7 @@ header p {
     display: flex;
     flex-direction: column;
     height: 100%;
+    max-width: 100%;
 }
 
 .chat-section h3 {
@@ -285,24 +286,37 @@ header p {
 /* Chat Input */
 .chat-input-container {
     display: flex;
-    gap: 10px;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
 }
 
 .chat-input-container input {
     flex: 1;
-    padding: 12px 15px;
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
+    padding: 16px 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 24px;
     font-size: 1em;
+    background: #f9fafb;
+    transition: all 0.2s ease;
 }
 
 .chat-input-container input:focus {
     outline: none;
     border-color: #3498db;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.chat-input-container input::placeholder {
+    color: #9ca3af;
 }
 
 .chat-input-container button {
-    min-width: 100px;
+    min-width: 80px;
+    padding: 16px 24px;
+    border-radius: 24px;
+    flex-shrink: 0;
 }
 
 /* Footer */
