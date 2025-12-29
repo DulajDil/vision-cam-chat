@@ -52,7 +52,7 @@ export class CameraComponent {
             this.webcam.style.display = 'block';
             this.capturedImage.style.display = 'none';
 
-            this.startBtn.textContent = '🔴 Stop Camera';
+            this.startBtn.textContent = 'Stop Camera';
             this.captureBtn.disabled = false;
 
             showStatus(this.statusDiv, 'Camera started', 'success');
@@ -69,7 +69,7 @@ export class CameraComponent {
             this.stream = null;
         }
 
-        this.startBtn.textContent = '📹 Start Camera';
+        this.startBtn.textContent = 'Start Camera';
         this.captureBtn.disabled = true;
 
         showStatus(this.statusDiv, 'Camera stopped', 'info');

@@ -34,10 +34,10 @@ export class AnalysisComponent {
     public setLoadingState(isLoading: boolean): void {
         if (isLoading) {
             this.analyzeBtn.disabled = true;
-            this.analyzeBtn.textContent = '⏳ Analyzing...';
+            this.analyzeBtn.textContent = 'Analyzing...';
         } else {
             this.analyzeBtn.disabled = false;
-            this.analyzeBtn.textContent = '🤖 Analyze Image';
+            this.analyzeBtn.textContent = 'Analyze Image';
         }
     }
 
