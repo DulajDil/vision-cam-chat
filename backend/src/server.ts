@@ -56,12 +56,12 @@ app.use((_req, res) => {
 // Global error handler
 const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     console.error('Unhandled error:', err);
-    
+
     // Don't leak error details in production
-    const message = config.NODE_ENV === 'production' 
-        ? 'Internal server error' 
+    const message = config.NODE_ENV === 'production'
+        ? 'Internal server error'
         : err.message || 'Internal server error';
-    
+
     res.status(500).json({
         error: message
     });
