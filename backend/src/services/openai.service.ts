@@ -21,7 +21,7 @@ export async function callOpenAI(
     const openai = new OpenAI({ apiKey });
 
     const response = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
             {
                 role: 'user',
@@ -31,7 +31,7 @@ export async function callOpenAI(
                         type: 'image_url',
                         image_url: {
                             url: `data:${mimeType};base64,${imageBase64}`,
-                            detail: 'low'
+                            detail: 'high'  // Changed from 'low' to 'high' for better image analysis
                         }
                     }
                 ]

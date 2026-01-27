@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision Cam Chat</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Vision Cam Chat</h1>
+            <p>Capture images and chat with AI about what you see</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Camera & Controls -->
+            <div class="camera-panel">
+                <div class="video-container">
+                    <video id="webcam" autoplay playsinline></video>
+                    <canvas id="canvas" style="display: none;"></canvas>
+                    <img id="capturedImage" style="display: none;" alt="Captured">
+                </div>
+
+                <div class="controls">
+                    <button id="startBtn" class="btn btn-primary">
+                        Start Camera
+                    </button>
+                    <button id="captureBtn" class="btn btn-success" disabled>
+                        Capture & Analyze
+                    </button>
+                </div>
+
+                <!-- Provider Selection -->
+                <div class="provider-selection">
+                    <label>AI Provider:</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="provider" value="bedrock" checked>
+                            AWS Bedrock (Claude)
+                        </label>
+                        <label>
+                            <input type="radio" name="provider" value="openai">
+                            OpenAI (GPT-4o)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- OpenAI API Key Input -->
+                <div id="openaiKeyInput" class="api-key-input" style="display: none;">
+                    <label for="openaiKey">OpenAI API Key:</label>
+                    <input type="password" id="openaiKey" placeholder="sk-..." autocomplete="off">
+                    <small>Your key is never stored, only used per request</small>
+                </div>
+            </div>
+
+            <!-- Right Panel: Chat & Results -->
+            <div class="chat-panel">
+                <div class="chat-section">
+                    <h3>AI Analysis & Chat</h3>
+                    <div id="chatHistory" class="chat-history">
+                        <p class="placeholder">Capture an image to start analyzing and asking questions!</p>
+                    </div>
+
+                    <div class="chat-input-container">
+                        <input type="text" id="questionInput" placeholder="Ask a question about the image..." disabled>
+                        <button id="askBtn" class="btn btn-primary" disabled>
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Backend Status: <span id="backendStatus" class="status-indicator">●</span></p>
+        </footer>
+    </div>
+
+    <!-- Floating Status Toast -->
+    <div id="status" class="status-toast"></div>
+
+    <script type="module" src="dist/app.js"></script>
+</body>
+
+</html>
